@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+        button {
+            display: inline-block;
+            margin: 20px;
+            height: 200px;
+            line-height: 200px;
+            width: 200px;
+            border-radius: 50%;
+            background-color: #3cc;
+        }
+    </style>
+</head>
+<body>
+    <button onClick="postSomeOne()">增加</button>
+    <button onClick="putSomeOne()">更新</button>
+    <button onClick="delSomeOne()">删除</button>
+    <button onClick="getAllProducts()">查询</button>
+</body>
+<script src="zepto.min.js"></script>
+<script type="text/javascript">
+    let initPrice = 1
+    let putPrice = 100
+    const reqUrl = 'http://localhost:3888/api/products'
+    function logger(){
+        return console.log.apply(console, arguments)
+    }
+    function fetchPost(type, data) {
+        $.ajax({
+          type: type,
+          dataType: "json",
+          url: reqUrl,
+          data: data ? JSON.stringify(data) : {},
+          contentType: 'application/json',
+          success: function(result){
+                logger(result)
+          },
+          error: function(err) {
+                logger(err)
+          }
+        })
+    }
+
+    function fetchJsonP() {
+      $.ajax({
+          url: reqUrl,
+          type: "GET",
+          dataType: 'jsonp',
+          jsonp: 'callback',
+          jsonpCallback:"success_jsonp", //用户定义的callback函数，没有定义的话会jQuery会自动生成以jQuery开头的函数 
+          success: function(result){
+              logger(result)
+          },
+      });
+    }
+    
+    function fetchGet() {
+      $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: reqUrl,
+        contentType: 'application/json',
+        success: function(result){
+              logger(result)
+              logger('正常get')
+        },
+        error: function(err) {
+              logger(err)
+        }
+      })
+    }
+    
+    function fetchDel(id) {
+      $.ajax({
+        type: "DELETE",
+        dataType: "json",
+        url: reqUrl + id,
+        contentType: 'application/json',
+        success: function(result){
+              logger(result)
+              logger('正常DELETE')
+        },
+        error: function(err) {
+              logger(err)
+        }
+      })
+    }
+
+    function fetchPut(id, data) {
+        $.ajax({
+          type: "PUT",
+          dataType: "json",
+          url: reqUrl + id,
+          contentType: 'application/json',
+          data: data ? JSON.stringify(data) : {},
+          success: function(result){
+              logger(result)
+              logger('正常PUT')
+          },
+          error: function(err) {
+              logger(err)
+          }
+        })
+    }
+
+    function getAllProducts() {
+        // fetchJsonP()
+        fetchGet()
+    }
+
+    function postSomeOne() {
+        let postData = {
+            name: 'haha',
+            price: initPrice++,
+        }
+        fetchPost("POST", postData)
+    }
+
+    function delSomeOne() {
+        fetchDel('1')
+    }
+
+    function putSomeOne() {
+        let putData = {
+            name: `haha${putPrice}`,
+            price: putPrice * initPrice,
+        }
+        fetchPut('2', putData)
+    }
+</script>
+</html>
